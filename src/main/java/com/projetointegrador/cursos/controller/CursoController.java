@@ -51,6 +51,20 @@ public class CursoController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @GetMapping("/{id}")
+    @Operation(
+            summary = "Buscar Curso por ID",
+            description = "Busca um curso pelo seu identificador"
+    )
+    @ApiResponse(responseCode = "200", description = "Curso encontrado com sucesso")
+    @ApiResponse(responseCode = "400", description = "ID inválido")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<CursoResponseDTO> buscarPorId(@Parameter(description = "ID do curso") @PathVariable Long id) {
+
+        return ResponseEntity.ok(cursoService.buscarPorId(id));
+    }
+
     @GetMapping
     @Operation(
             summary = "Listar Cursos",

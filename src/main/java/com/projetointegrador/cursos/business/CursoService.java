@@ -47,6 +47,12 @@ public class CursoService {
     }
 
     @Transactional(readOnly = true)
+    public CursoResponseDTO buscarPorId(Long id) {
+
+        return cursoMapper.toResponseDTO(buscarEntidadePorId(id));
+    }
+
+    @Transactional(readOnly = true)
     public Page<CursoResponseDTO> listar(Pageable pageable) {
 
         return cursoRepository.findAll(pageable).map(cursoMapper::toResponseDTO);
