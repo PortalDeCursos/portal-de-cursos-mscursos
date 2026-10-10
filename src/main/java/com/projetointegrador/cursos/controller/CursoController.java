@@ -71,11 +71,10 @@ public class CursoController {
     @ApiResponse(responseCode = "200", description = "Cursos listados com sucesso")
     @ApiResponse(responseCode = "400", description = "Valor de filtro inválido")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
-    public ResponseEntity<Page<CursoResponseDTO>> buscar(
-            @RequestParam(required = false) GrauEnum grau,
-            @RequestParam(required = false) TurnoEnum turno,
-            @RequestParam(required = false) ModalidadeEnum modalidade,
-            @ParameterObject @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+    public ResponseEntity<Page<CursoResponseDTO>> buscar(@RequestParam(required = false) GrauEnum grau,
+                                                         @RequestParam(required = false) TurnoEnum turno,
+                                                         @RequestParam(required = false) ModalidadeEnum modalidade,
+                                                         @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
 
         return ResponseEntity.ok(cursoService.buscar(grau, turno, modalidade, pageable));
     }
