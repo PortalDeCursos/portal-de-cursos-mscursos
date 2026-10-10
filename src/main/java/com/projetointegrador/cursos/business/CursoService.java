@@ -6,6 +6,8 @@ import com.projetointegrador.cursos.business.mapper.CursoMapper;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +39,11 @@ public class CursoService {
         if (cursoRepository.existsByAcronimoIgnoreCase(acronimo)) {
             throw new ConflictException("Este acrônimo ja está em uso por outro curso: " + acronimo);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> listar(Pageable pageable) {
+
+        return cursoRepository.findAll(pageable).map(cursoMapper::toResponseDTO);
     }
 }
