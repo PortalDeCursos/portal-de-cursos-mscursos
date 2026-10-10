@@ -103,4 +103,12 @@ public class CursoService {
 
         return cursoMapper.toResponseDTO(cursoRepository.saveAndFlush(entity));
     }
+
+    @Transactional
+    public void deletar(Long id) {
+
+        Curso entity = buscarEntidadePorId(id);
+
+        cursoRepository.delete(entity);
+    }
 }

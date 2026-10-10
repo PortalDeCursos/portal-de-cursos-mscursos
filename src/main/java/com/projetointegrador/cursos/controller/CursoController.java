@@ -94,4 +94,19 @@ public class CursoController {
 
         return ResponseEntity.ok().body(cursoService.atualizar(id, dto));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Deletar Curso",
+            description = "Deleta um curso existente"
+    )
+    @ApiResponse(responseCode = "204", description = "Curso deletado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do curso") @PathVariable Long id) {
+
+        cursoService.deletar(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
