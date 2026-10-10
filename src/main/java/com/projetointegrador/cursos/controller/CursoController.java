@@ -7,11 +7,11 @@ import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
 import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
 import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -51,6 +51,20 @@ public class CursoController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @GetMapping("/{id}")
+    @Operation(
+            summary = "Buscar Curso por ID",
+            description = "Busca um curso pelo seu identificador"
+    )
+    @ApiResponse(responseCode = "200", description = "Curso encontrado com sucesso")
+    @ApiResponse(responseCode = "400", description = "ID inválido")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<CursoResponseDTO> buscarPorId(@Parameter(description = "ID do curso") @PathVariable Long id) {
+
+        return ResponseEntity.ok(cursoService.buscarPorId(id));
+    }
+
     @GetMapping
     @Operation(
             summary = "Listar Cursos",
@@ -77,5 +91,36 @@ public class CursoController {
                                                          @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
 
         return ResponseEntity.ok(cursoService.buscar(grau, turno, modalidade, pageable));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(
+            summary = "Atualizar Curso",
+            description = "Atualiza todos os dados de um curso existente"
+    )
+    @ApiResponse(responseCode = "200", description = "Curso atualizado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "409", description = "Nome ou acrônimo já em uso por outro curso")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<CursoResponseDTO> atualizar(@Parameter(description = "ID do curso") @PathVariable Long id,
+                                                      @Valid @RequestBody CursoRequestDTO dto) {
+
+        return ResponseEntity.ok().body(cursoService.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Deletar Curso",
+            description = "Deleta um curso existente"
+    )
+    @ApiResponse(responseCode = "204", description = "Curso deletado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do curso") @PathVariable Long id) {
+
+        cursoService.deletar(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
