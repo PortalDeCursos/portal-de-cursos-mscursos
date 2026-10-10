@@ -3,11 +3,15 @@ package com.projetointegrador.cursos.controller;
 import com.projetointegrador.cursos.business.CursoService;
 import com.projetointegrador.cursos.business.dto.request.CursoRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
+import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
+import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
+import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -57,5 +61,22 @@ public class CursoController {
     public ResponseEntity<Page<CursoResponseDTO>> listar(@PageableDefault(size = 10, sort = "nome") Pageable pageable) {
 
         return ResponseEntity.ok().body(cursoService.listar(pageable));
+    }
+
+    @GetMapping("/busca")
+    @Operation(
+            summary = "Buscar Cursos",
+            description = "Busca cursos de forma paginada por grau, turno ou modalidade. Sem filtro, lista todos"
+    )
+    @ApiResponse(responseCode = "200", description = "Cursos listados com sucesso")
+    @ApiResponse(responseCode = "400", description = "Valor de filtro inválido")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Page<CursoResponseDTO>> buscar(
+            @RequestParam(required = false) GrauEnum grau,
+            @RequestParam(required = false) TurnoEnum turno,
+            @RequestParam(required = false) ModalidadeEnum modalidade,
+            @ParameterObject @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+
+        return ResponseEntity.ok(cursoService.buscar(grau, turno, modalidade, pageable));
     }
 }

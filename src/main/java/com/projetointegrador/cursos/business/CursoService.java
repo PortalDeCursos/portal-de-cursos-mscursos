@@ -3,6 +3,10 @@ package com.projetointegrador.cursos.business;
 import com.projetointegrador.cursos.business.dto.request.CursoRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
 import com.projetointegrador.cursos.business.mapper.CursoMapper;
+import com.projetointegrador.cursos.infrastructure.entity.Curso;
+import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
+import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
+import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +49,24 @@ public class CursoService {
     public Page<CursoResponseDTO> listar(Pageable pageable) {
 
         return cursoRepository.findAll(pageable).map(cursoMapper::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> buscar(GrauEnum grau, TurnoEnum turno,
+                                         ModalidadeEnum modalidade, Pageable pageable) {
+
+        Page<Curso> cursos;
+
+        if (grau != null) {
+            cursos = cursoRepository.findByGrau(grau, pageable);
+        } else if (turno != null) {
+            cursos = cursoRepository.findByTurno(turno, pageable);
+        } else if (modalidade != null) {
+            cursos = cursoRepository.findByModalidade(modalidade, pageable);
+        } else {
+            cursos = cursoRepository.findAll(pageable);
+        }
+
+        return cursos.map(cursoMapper::toResponseDTO);
     }
 }
