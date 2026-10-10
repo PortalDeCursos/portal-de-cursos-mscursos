@@ -20,4 +20,7 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     Page<Curso> findByGrau(GrauEnum grau, Pageable pageable);
     Page<Curso> findByTurno(TurnoEnum turno, Pageable pageable);
     Page<Curso> findByModalidade(ModalidadeEnum modalidade, Pageable pageable);
+
+    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Long id);
+    boolean existsByAcronimoIgnoreCaseAndIdNot(String acronimo, Long id);
 }

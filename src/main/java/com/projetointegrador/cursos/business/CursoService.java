@@ -8,6 +8,7 @@ import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
 import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
 import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
+import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,14 +35,14 @@ public class CursoService {
     private void verificarNome(String nome) {
 
         if (cursoRepository.existsByNomeIgnoreCase(nome)) {
-            throw new ConflictException("Este nome ja está em uso por outro curso: " + nome);
+            throw new ConflictException("Este nome já está em uso por outro curso: " + nome);
         }
     }
 
     private void verificarAcronimo(String acronimo) {
 
         if (cursoRepository.existsByAcronimoIgnoreCase(acronimo)) {
-            throw new ConflictException("Este acrônimo ja está em uso por outro curso: " + acronimo);
+            throw new ConflictException("Este acrônimo já está em uso por outro curso: " + acronimo);
         }
     }
 
@@ -68,5 +69,38 @@ public class CursoService {
         }
 
         return cursos.map(cursoMapper::toResponseDTO);
+    }
+
+    private Curso buscarEntidadePorId(Long id) {
+
+        return cursoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com esse id: " + id));
+    }
+
+    private void verificarNomeParaAtualizar(String nome, Long id) {
+
+        if (cursoRepository.existsByNomeIgnoreCaseAndIdNot(nome, id)) {
+            throw new ConflictException("Este nome já está em uso por outro curso: " + nome);
+        }
+    }
+
+    private void verificarAcronimoParaAtualizar(String acronimo, Long id) {
+
+        if (cursoRepository.existsByAcronimoIgnoreCaseAndIdNot(acronimo, id)) {
+            throw new ConflictException("Este acrônimo já está em uso por outro curso: " + acronimo);
+        }
+    }
+
+    @Transactional
+    public CursoResponseDTO atualizar(Long id, CursoRequestDTO dto) {
+
+        Curso entity = buscarEntidadePorId(id);
+
+        verificarNomeParaAtualizar(dto.nome(), id);
+        verificarAcronimoParaAtualizar(dto.acronimo(), id);
+
+        cursoMapper.updateEntityFromDTO(dto, entity);
+
+        return cursoMapper.toResponseDTO(cursoRepository.saveAndFlush(entity));
     }
 }
