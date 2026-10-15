@@ -4,12 +4,13 @@ import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +60,30 @@ public class GlobalExceptionHandler {
         problem.setTitle("Erro de validação");
 
         problem.setProperty("errors", extractErrors(ex));
+
+        return problem;
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ProblemDetail handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, "O parâmetro obrigatório '" + ex.getParameterName() + "' não foi informado"
+        );
+
+        problem.setTitle("Parâmetro obrigatório ausente");
+
+        return problem;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, "Valor inválido para o parâmetro: " + ex.getName()
+        );
+
+        problem.setTitle("Parâmetro inválido");
 
         return problem;
     }
