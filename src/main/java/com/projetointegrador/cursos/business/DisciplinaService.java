@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DisciplinaService {
@@ -24,8 +26,7 @@ public class DisciplinaService {
     @Transactional
     public DisciplinaResponseDTO cadastrar(DisciplinaRequestDTO dto) {
 
-        Curso curso = cursoRepository.findById(dto.cursoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com id: " + dto.cursoId()));
+        Curso curso = buscarCurso(dto.cursoId());
 
         verificarCodigo(dto.codigo());
 
@@ -36,10 +37,27 @@ public class DisciplinaService {
         return disciplinaMapper.toResponseDTO(disciplinaRepository.save(entity));
     }
 
+    private Curso buscarCurso(Long cursoId) {
+
+        return cursoRepository.findById(cursoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com id: " + cursoId));
+    }
+
     private void verificarCodigo(String codigo) {
 
         if (disciplinaRepository.existsByCodigoIgnoreCase(codigo)) {
             throw new ConflictException("Código já em uso por outra disciplina: " + codigo);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<DisciplinaResponseDTO> listarPorCurso(Long cursoId) {
+
+        buscarCurso(cursoId);
+
+        return disciplinaRepository.findByCursoId(cursoId)
+                .stream()
+                .map(disciplinaMapper::toResponseDTO)
+                .toList();
     }
 }

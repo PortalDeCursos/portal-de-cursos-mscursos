@@ -9,13 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/disciplinas")
@@ -46,5 +44,19 @@ public class DisciplinaController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Listar Disciplinas por Curso",
+            description = "Listar todas as disciplinas vinculadas a um curso específico"
+    )
+    @ApiResponse(responseCode = "200", description = "Disciplinas listadas com sucesso")
+    @ApiResponse(responseCode = "400", description = "ID do curso inválido")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<List<DisciplinaResponseDTO>> listarPorCurso(@RequestParam Long cursoId) {
+
+        return ResponseEntity.ok(disciplinaService.listarPorCurso(cursoId));
     }
 }
