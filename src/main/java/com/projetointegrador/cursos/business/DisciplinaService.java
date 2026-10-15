@@ -5,6 +5,7 @@ import com.projetointegrador.cursos.business.dto.response.DisciplinaResponseDTO;
 import com.projetointegrador.cursos.business.mapper.DisciplinaMapper;
 import com.projetointegrador.cursos.infrastructure.entity.Curso;
 import com.projetointegrador.cursos.infrastructure.entity.Disciplina;
+import com.projetointegrador.cursos.infrastructure.enums.SemestreEnum;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
@@ -59,5 +60,28 @@ public class DisciplinaService {
                 .stream()
                 .map(disciplinaMapper::toResponseDTO)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DisciplinaResponseDTO> filtrar(Long cursoId, SemestreEnum semestre, Boolean obrigatoria) {
+
+        buscarCurso(cursoId);
+
+        List<Disciplina> disciplinas;
+
+        if (semestre != null && obrigatoria != null) {
+            disciplinas = disciplinaRepository.findByCursoIdAndSemestreAndObrigatoria(cursoId, semestre, obrigatoria);
+
+        } else if (semestre != null) {
+            disciplinas = disciplinaRepository.findByCursoIdAndSemestre(cursoId, semestre);
+
+        } else if (obrigatoria != null) {
+            disciplinas = disciplinaRepository.findByCursoIdAndObrigatoria(cursoId, obrigatoria);
+
+        } else {
+            disciplinas = disciplinaRepository.findByCursoId(cursoId);
+        }
+
+        return disciplinas.stream().map(disciplinaMapper::toResponseDTO).toList();
     }
 }

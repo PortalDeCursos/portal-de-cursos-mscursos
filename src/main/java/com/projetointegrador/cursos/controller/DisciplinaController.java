@@ -3,6 +3,7 @@ package com.projetointegrador.cursos.controller;
 import com.projetointegrador.cursos.business.DisciplinaService;
 import com.projetointegrador.cursos.business.dto.request.DisciplinaRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.DisciplinaResponseDTO;
+import com.projetointegrador.cursos.infrastructure.enums.SemestreEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,5 +59,22 @@ public class DisciplinaController {
     public ResponseEntity<List<DisciplinaResponseDTO>> listarPorCurso(@RequestParam Long cursoId) {
 
         return ResponseEntity.ok(disciplinaService.listarPorCurso(cursoId));
+    }
+
+    @GetMapping("/filtros")
+    @Operation(
+            summary = "Filtrar Disciplinas",
+            description = "Listar disciplinas de um curso com filtros opcionais por semestre e obrigatoriedade"
+    )
+    @ApiResponse(responseCode = "200", description = "Disciplinas listadas com sucesso")
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<List<DisciplinaResponseDTO>> filtar(
+            @RequestParam Long cursoId,
+            @RequestParam(required = false) SemestreEnum semestre,
+            @RequestParam(required = false) Boolean obrigatoria) {
+
+        return ResponseEntity.ok(disciplinaService.filtrar(cursoId, semestre, obrigatoria));
     }
 }
