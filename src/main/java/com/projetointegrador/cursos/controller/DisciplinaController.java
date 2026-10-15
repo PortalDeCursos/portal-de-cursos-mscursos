@@ -1,0 +1,50 @@
+package com.projetointegrador.cursos.controller;
+
+import com.projetointegrador.cursos.business.DisciplinaService;
+import com.projetointegrador.cursos.business.dto.request.DisciplinaRequestDTO;
+import com.projetointegrador.cursos.business.dto.response.DisciplinaResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+
+@RestController
+@RequestMapping("/disciplinas")
+@RequiredArgsConstructor
+@Tag(name = "Disciplinas", description = "Gerenciamento de Disciplinas")
+public class DisciplinaController {
+
+    private final DisciplinaService disciplinaService;
+
+    @PostMapping
+    @Operation(
+            summary = "Cadastrar Disciplina",
+            description = "Cadastrar uma nova disciplina em um curso"
+    )
+    @ApiResponse(responseCode = "201", description = "Disciplina cadastrada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "409", description = "Código já em uso por outra disciplina")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<DisciplinaResponseDTO> cadastrar(@Valid @RequestBody DisciplinaRequestDTO dto) {
+
+        DisciplinaResponseDTO response = disciplinaService.cadastrar(dto);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
+    }
+}
