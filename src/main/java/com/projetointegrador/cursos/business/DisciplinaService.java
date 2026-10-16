@@ -125,4 +125,12 @@ public class DisciplinaService {
             throw new ConflictException("Este código já está em uso por outra disciplina: " + codigo);
         }
     }
+
+    @Transactional
+    public void deletar(Long id) {
+
+        Disciplina entity = buscarEntidadePorId(id);
+
+        disciplinaRepository.delete(entity);
+    }
 }

@@ -5,6 +5,7 @@ import com.projetointegrador.cursos.business.dto.request.DisciplinaRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.DisciplinaResponseDTO;
 import com.projetointegrador.cursos.infrastructure.enums.SemestreEnum;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -88,9 +89,24 @@ public class DisciplinaController {
     @ApiResponse(responseCode = "404", description = "Disciplina não encontrada")
     @ApiResponse(responseCode = "409", description = "Nome ou Código já em uso por outra disciplina")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
-    public ResponseEntity<DisciplinaResponseDTO> atualizar(@PathVariable Long id,
+    public ResponseEntity<DisciplinaResponseDTO> atualizar(@Parameter(description = "ID da disciplina") @PathVariable Long id,
                                                            @Valid @RequestBody DisciplinaRequestDTO dto) {
 
         return ResponseEntity.ok().body(disciplinaService.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Deletar Disciplina",
+            description = "Deleta um disciplina existente"
+    )
+    @ApiResponse(responseCode = "204", description = "Disciplina deletada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Disciplina não encontrada")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID da disciplina") @PathVariable Long id) {
+
+        disciplinaService.deletar(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
