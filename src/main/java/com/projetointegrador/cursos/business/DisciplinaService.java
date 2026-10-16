@@ -29,6 +29,7 @@ public class DisciplinaService {
 
         Curso curso = buscarCurso(dto.cursoId());
 
+        verificarNome(dto.nome());
         verificarCodigo(dto.codigo());
 
         Disciplina entity = disciplinaMapper.toEntity(dto);
@@ -42,6 +43,13 @@ public class DisciplinaService {
 
         return cursoRepository.findById(cursoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com id: " + cursoId));
+    }
+
+    private void verificarNome(String nome) {
+
+        if (disciplinaRepository.existsByNomeIgnoreCase(nome)) {
+            throw new ConflictException("Nome já em uso por outra disciplina: " + nome);
+        }
     }
 
     private void verificarCodigo(String codigo) {
@@ -83,5 +91,38 @@ public class DisciplinaService {
         }
 
         return disciplinas.stream().map(disciplinaMapper::toResponseDTO).toList();
+    }
+
+    @Transactional
+    public DisciplinaResponseDTO atualizar(Long id, DisciplinaRequestDTO dto) {
+
+        Disciplina entity = buscarEntidadePorId(id);
+
+        verificarNomeParaAtualizar(dto.nome(), id);
+        verificarCodigoParaAtualizar(dto.codigo(), id);
+
+        disciplinaMapper.updateEntityFromDTO(dto, entity);
+
+        return disciplinaMapper.toResponseDTO(disciplinaRepository.saveAndFlush(entity));
+    }
+
+    private Disciplina buscarEntidadePorId(Long id) {
+
+        return disciplinaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Disciplina não encontrada com id: " + id));
+    }
+
+    private void verificarNomeParaAtualizar(String nome, Long id) {
+
+        if (disciplinaRepository.existsByNomeIgnoreCaseAndIdNot(nome, id)) {
+            throw new ConflictException("Este nome já está em uso por outra disciplina: " + nome);
+        }
+    }
+
+    private void verificarCodigoParaAtualizar(String codigo, Long id) {
+
+        if (disciplinaRepository.existsByCodigoIgnoreCaseAndIdNot(codigo, id)) {
+            throw new ConflictException("Este código já está em uso por outra disciplina: " + codigo);
+        }
     }
 }

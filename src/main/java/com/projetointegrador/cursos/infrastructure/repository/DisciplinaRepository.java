@@ -11,6 +11,9 @@ import java.util.List;
 public interface DisciplinaRepository extends JpaRepository<Disciplina, Long> {
 
     boolean existsByCodigoIgnoreCase(String codigo);
+    boolean existsByNomeIgnoreCase(String nome);
+    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Long id);
+    boolean existsByCodigoIgnoreCaseAndIdNot(String codigo, Long id);
 
     List<Disciplina> findByCursoId(Long cursoId);
     List<Disciplina> findByCursoIdAndSemestreAndObrigatoria(

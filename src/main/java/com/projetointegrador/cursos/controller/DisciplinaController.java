@@ -77,4 +77,20 @@ public class DisciplinaController {
 
         return ResponseEntity.ok(disciplinaService.filtrar(cursoId, semestre, obrigatoria));
     }
+
+    @PutMapping("/{id}")
+    @Operation(
+            summary = "Atualizar Disciplina",
+            description = "Atualiza todos os dados de uma disciplina existente"
+    )
+    @ApiResponse(responseCode = "200", description = "Disciplina atualizada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Disciplina não encontrada")
+    @ApiResponse(responseCode = "409", description = "Nome ou Código já em uso por outra disciplina")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<DisciplinaResponseDTO> atualizar(@PathVariable Long id,
+                                                           @Valid @RequestBody DisciplinaRequestDTO dto) {
+
+        return ResponseEntity.ok().body(disciplinaService.atualizar(id, dto));
+    }
 }
