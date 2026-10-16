@@ -48,6 +48,20 @@ public class DisciplinaController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @GetMapping("/{id}")
+    @Operation(
+            summary = "Buscar Disciplina por ID",
+            description = "Busca uma disciplina pelo seu identificador"
+    )
+    @ApiResponse(responseCode = "200", description = "Disciplina encontrada com sucesso")
+    @ApiResponse(responseCode = "400", description = "ID inválido")
+    @ApiResponse(responseCode = "404", description = "Disciplina não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<DisciplinaResponseDTO> buscarPorId(@Parameter(description = "ID da disciplina") @PathVariable Long id) {
+
+        return ResponseEntity.ok(disciplinaService.buscarPorId(id));
+    }
+
     @GetMapping
     @Operation(
             summary = "Listar Disciplinas por Curso",

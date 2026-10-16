@@ -60,6 +60,12 @@ public class DisciplinaService {
     }
 
     @Transactional(readOnly = true)
+    public DisciplinaResponseDTO buscarPorId(Long id) {
+
+        return disciplinaMapper.toResponseDTO(buscarEntidadePorId(id));
+    }
+
+    @Transactional(readOnly = true)
     public List<DisciplinaResponseDTO> listarPorCurso(Long cursoId) {
 
         buscarCurso(cursoId);
