@@ -5,6 +5,7 @@ import com.projetointegrador.cursos.business.dto.response.AreaConhecimentoRespon
 import com.projetointegrador.cursos.infrastructure.entity.AreaConhecimento;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface AreaConhecimentoMapper {
@@ -15,4 +16,9 @@ public interface AreaConhecimentoMapper {
     AreaConhecimento toEntity(AreaConhecimentoRequestDTO dto);
 
     AreaConhecimentoResponseDTO toResponseDTO(AreaConhecimento entity);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "criadoEm", ignore = true)
+    @Mapping(target = "atualizadoEm", ignore = true)
+    void updateEntityFromDTO(AreaConhecimentoRequestDTO dto, @MappingTarget AreaConhecimento entity);
 }

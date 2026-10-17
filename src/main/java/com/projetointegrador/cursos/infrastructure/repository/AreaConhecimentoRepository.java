@@ -10,6 +10,7 @@ import java.util.List;
 public interface AreaConhecimentoRepository extends JpaRepository<AreaConhecimento, Long> {
 
     boolean existsByNome(String nome);
+    boolean existsByNomeAndIdNot(String nome, Long id);
 
     List<AreaConhecimento> findByNomeContainingIgnoreCase(String nome);
     List<AreaConhecimento> findAllByOrderByNomeAsc();

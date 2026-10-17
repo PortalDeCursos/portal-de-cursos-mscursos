@@ -83,4 +83,20 @@ public class AreaConhecimentoController {
 
         return ResponseEntity.ok(areaConhecimentoService.listar());
     }
+
+    @PutMapping("/{id}")
+    @Operation(
+            summary = "Atualizar Área do Conhecimento",
+            description = "Atualiza uma área do conhecimento existente"
+    )
+    @ApiResponse(responseCode = "200", description = "Área atualizada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Área não encontrada")
+    @ApiResponse(responseCode = "409", description = "Nome não disponível")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<AreaConhecimentoResponseDTO> atualizar(@Parameter(description = "ID da área") @PathVariable Long id,
+                                                                 @Valid @RequestBody AreaConhecimentoRequestDTO dto) {
+
+        return ResponseEntity.ok(areaConhecimentoService.atualizar(id, dto));
+    }
 }

@@ -68,4 +68,23 @@ public class AreaConhecimentoService {
                 .map(areaConhecimentoMapper::toResponseDTO)
                 .toList();
     }
+
+    @Transactional
+    public AreaConhecimentoResponseDTO atualizar(Long id, AreaConhecimentoRequestDTO dto) {
+
+        AreaConhecimento entity = buscarEntidadePorId(id);
+
+        verificarNomeParaAtualizar(dto.nome(), id);
+
+        areaConhecimentoMapper.updateEntityFromDTO(dto, entity);
+
+        return areaConhecimentoMapper.toResponseDTO(areaConhecimentoRepository.saveAndFlush(entity));
+    }
+
+    private void verificarNomeParaAtualizar(String nome, Long id) {
+
+        if (areaConhecimentoRepository.existsByNomeAndIdNot(nome, id)) {
+            throw new ConflictException("Nome não disponível: " + nome);
+        }
+    }
 }
