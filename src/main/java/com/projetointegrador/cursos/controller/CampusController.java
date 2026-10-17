@@ -4,18 +4,17 @@ import com.projetointegrador.cursos.business.CampusService;
 import com.projetointegrador.cursos.business.dto.request.CampusRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CampusResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/campus")
@@ -46,5 +45,31 @@ public class CampusController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(
+            summary = "Buscar Campus por ID",
+            description = "Busca um campus pelo seu identificador"
+    )
+    @ApiResponse(responseCode = "200", description = "Campus encontrado com sucesso")
+    @ApiResponse(responseCode = "400", description = "ID inválido")
+    @ApiResponse(responseCode = "404", description = "Campus não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<CampusResponseDTO> buscarPorId(@Parameter(description = "ID do campus") @PathVariable Long id) {
+
+        return ResponseEntity.ok(campusService.buscarPorId(id));
+    }
+
+    @GetMapping("/buscar")
+    @Operation(
+            summary = "Buscar Campus por nome",
+            description = "Busca um campus pelo seu nome"
+    )
+    @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<List<CampusResponseDTO>> buscarPorNome(@RequestParam String nome) {
+
+        return ResponseEntity.ok(campusService.buscarPorNome(nome));
     }
 }
