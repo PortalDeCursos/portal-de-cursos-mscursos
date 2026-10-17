@@ -113,4 +113,19 @@ public class CampusController {
 
         return ResponseEntity.ok(campusService.atualizar(id, dto));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Deletar Campus",
+            description = "Deleta um campus existente"
+    )
+    @ApiResponse(responseCode = "204", description = "Campus deletado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Campus não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do campus") @PathVariable Long id) {
+
+        campusService.deletar(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

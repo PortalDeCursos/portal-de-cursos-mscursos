@@ -113,4 +113,12 @@ public class CampusService {
             throw new ConflictException("Acrônimo informa não disponível: " + acronimo);
         }
     }
+
+    @Transactional
+    public void deletar(Long id) {
+
+        Campus entity = buscarEntidadePorId(id);
+
+        campusRepository.delete(entity);
+    }
 }
