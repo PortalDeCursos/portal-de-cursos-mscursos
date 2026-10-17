@@ -4,6 +4,7 @@ import com.projetointegrador.cursos.business.AreaConhecimentoService;
 import com.projetointegrador.cursos.business.dto.request.AreaConhecimentoRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.AreaConhecimentoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -43,6 +44,20 @@ public class AreaConhecimentoController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(
+            summary = "Buscar Área do Conhecimento",
+            description = "Buscar uma área do conhecimento pelo id"
+    )
+    @ApiResponse(responseCode = "201", description = "Área encontrada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Área não encontrada")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<AreaConhecimentoResponseDTO> buscarPorId(@Parameter(description = "ID da Área") @PathVariable Long id) {
+
+        return ResponseEntity.ok(areaConhecimentoService.buscarPorId(id));
     }
 
     @GetMapping("/buscar")

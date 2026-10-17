@@ -5,6 +5,7 @@ import com.projetointegrador.cursos.business.dto.response.AreaConhecimentoRespon
 import com.projetointegrador.cursos.business.mapper.AreaConhecimentoMapper;
 import com.projetointegrador.cursos.infrastructure.entity.AreaConhecimento;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
+import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
 import com.projetointegrador.cursos.infrastructure.repository.AreaConhecimentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,20 @@ public class AreaConhecimentoService {
         if (areaConhecimentoRepository.existsByNome(nome)) {
             throw new ConflictException("Nome informado não disponível: " + nome);
         }
+    }
+
+    @Transactional
+    public AreaConhecimentoResponseDTO buscarPorId(Long id) {
+
+        AreaConhecimento areaConhecimento = buscarEntidadePorId(id);
+
+        return areaConhecimentoMapper.toResponseDTO(areaConhecimento);
+    }
+
+    private AreaConhecimento buscarEntidadePorId(Long id) {
+
+        return areaConhecimentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada com id informado: " + id));
     }
 
     @Transactional(readOnly = true)
