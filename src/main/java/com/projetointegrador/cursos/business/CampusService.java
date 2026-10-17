@@ -68,4 +68,13 @@ public class CampusService {
         return campusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campus não encontrado com id informado: " + id));
     }
+
+    @Transactional(readOnly = true)
+    public List<CampusResponseDTO> listar() {
+
+        return campusRepository.findAllByOrderByNomeAsc()
+                .stream()
+                .map(campusMapper::toResponseDTO)
+                .toList();
+    }
 }

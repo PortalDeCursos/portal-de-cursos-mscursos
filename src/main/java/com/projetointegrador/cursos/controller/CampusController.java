@@ -63,13 +63,25 @@ public class CampusController {
 
     @GetMapping("/buscar")
     @Operation(
-            summary = "Buscar Campus por nome",
-            description = "Busca um campus pelo seu nome"
+            summary = "Listar Campus",
+            description = "Lista todos os campus"
     )
     @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     public ResponseEntity<List<CampusResponseDTO>> buscarPorNome(@RequestParam String nome) {
 
         return ResponseEntity.ok(campusService.buscarPorNome(nome));
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "Buscar Campus por nome",
+            description = "Busca um campus pelo seu nome"
+    )
+    @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<List<CampusResponseDTO>> listar() {
+
+        return ResponseEntity.ok(campusService.listar());
     }
 }
