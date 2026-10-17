@@ -84,4 +84,17 @@ public class CampusController {
 
         return ResponseEntity.ok(campusService.listar());
     }
+
+    @GetMapping("/filtros")
+    @Operation(
+            summary = "Filtrar Campus",
+            description = "Filtrar campus por cidade"
+    )
+    @ApiResponse(responseCode = "200", description = "Campus listados com sucesso")
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<List<CampusResponseDTO>> filtar(@RequestParam String cidade) {
+
+        return ResponseEntity.ok(campusService.filtrar(cidade));
+    }
 }

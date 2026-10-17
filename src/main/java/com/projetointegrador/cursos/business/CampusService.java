@@ -77,4 +77,13 @@ public class CampusService {
                 .map(campusMapper::toResponseDTO)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<CampusResponseDTO> filtrar(String cidade) {
+
+        return campusRepository.findByCidadeIgnoreCase(cidade)
+                .stream()
+                .map(campusMapper::toResponseDTO)
+                .toList();
+    }
 }

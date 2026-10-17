@@ -14,4 +14,5 @@ public interface CampusRepository extends JpaRepository<Campus, Long> {
 
     List<Campus> findByNomeContainingIgnoreCase(String nome);
     List<Campus> findAllByOrderByNomeAsc();
+    List<Campus> findByCidadeIgnoreCase(String cidade);
 }
