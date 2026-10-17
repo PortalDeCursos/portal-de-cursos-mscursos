@@ -12,4 +12,5 @@ public interface AreaConhecimentoRepository extends JpaRepository<AreaConhecimen
     boolean existsByNome(String nome);
 
     List<AreaConhecimento> findByNomeContainingIgnoreCase(String nome);
+    List<AreaConhecimento> findAllByOrderByNomeAsc();
 }

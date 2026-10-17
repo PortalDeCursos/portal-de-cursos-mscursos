@@ -59,4 +59,13 @@ public class AreaConhecimentoService {
                 .map(areaConhecimentoMapper::toResponseDTO)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<AreaConhecimentoResponseDTO> listar() {
+
+        return areaConhecimentoRepository.findAllByOrderByNomeAsc()
+                .stream()
+                .map(areaConhecimentoMapper::toResponseDTO)
+                .toList();
+    }
 }

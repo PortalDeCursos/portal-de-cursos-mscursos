@@ -71,4 +71,16 @@ public class AreaConhecimentoController {
 
         return ResponseEntity.ok(areaConhecimentoService.buscarPorNome(nome));
     }
+
+    @GetMapping
+    @Operation(
+            summary = "Listar Áreas do Conhecimento",
+            description = "Listar áreas do conhecimento pelo nome"
+    )
+    @ApiResponse(responseCode = "200", description = "Áreas listadas com sucesso")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<List<AreaConhecimentoResponseDTO>> listar() {
+
+        return ResponseEntity.ok(areaConhecimentoService.listar());
+    }
 }
