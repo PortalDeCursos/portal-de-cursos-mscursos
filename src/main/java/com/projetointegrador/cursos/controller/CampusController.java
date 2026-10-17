@@ -99,8 +99,8 @@ public class CampusController {
 
     @PutMapping("/{id}")
     @Operation(
-            summary = "Cadastrar Campus",
-            description = "Cadastrar um novo campus"
+            summary = "Atualizar Campus",
+            description = "Atualiza um campus existente"
     )
     @ApiResponse(responseCode = "200", description = "Campus atualizado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
