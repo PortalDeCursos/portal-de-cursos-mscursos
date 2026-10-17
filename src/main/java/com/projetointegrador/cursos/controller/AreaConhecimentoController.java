@@ -99,4 +99,19 @@ public class AreaConhecimentoController {
 
         return ResponseEntity.ok(areaConhecimentoService.atualizar(id, dto));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Deletar Área do Conhecimento",
+            description = "Deleta uma área do conhecimento existente"
+    )
+    @ApiResponse(responseCode = "204", description = "Área deletada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Área não encontrada")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID da área") @PathVariable Long id) {
+
+        areaConhecimentoService.deletar(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

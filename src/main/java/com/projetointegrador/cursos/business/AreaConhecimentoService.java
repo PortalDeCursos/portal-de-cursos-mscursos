@@ -87,4 +87,12 @@ public class AreaConhecimentoService {
             throw new ConflictException("Nome não disponível: " + nome);
         }
     }
+
+    @Transactional
+    public void deletar(Long id) {
+
+        AreaConhecimento entity = buscarEntidadePorId(id);
+
+        areaConhecimentoRepository.delete(entity);
+    }
 }
