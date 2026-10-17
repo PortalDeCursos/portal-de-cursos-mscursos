@@ -65,7 +65,7 @@ public class AreaConhecimentoController {
             summary = "Buscar Área do Conhecimento",
             description = "Buscar área do conhecimento pelo nome"
     )
-    @ApiResponse(responseCode = "200", description = "Área cadastrada com sucesso")
+    @ApiResponse(responseCode = "200", description = "Área encontrada com sucesso")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     public ResponseEntity<List<AreaConhecimentoResponseDTO>> buscarPorNome(@RequestParam String nome) {
 
