@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AreaConhecimentoService {
@@ -32,5 +34,14 @@ public class AreaConhecimentoService {
         if (areaConhecimentoRepository.existsByNome(nome)) {
             throw new ConflictException("Nome informado não disponível: " + nome);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<AreaConhecimentoResponseDTO> buscarPorNome(String nome) {
+
+        return areaConhecimentoRepository.findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(areaConhecimentoMapper::toResponseDTO)
+                .toList();
     }
 }
