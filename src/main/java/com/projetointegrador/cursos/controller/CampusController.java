@@ -31,7 +31,6 @@ public class CampusController {
     )
     @ApiResponse(responseCode = "201", description = "Campus cadastrado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "404", description = "Campus não encontrado")
     @ApiResponse(responseCode = "409", description = "Nome ou Acrônimo já em uso")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     public ResponseEntity<CampusResponseDTO> cadastrar(@Valid @RequestBody CampusRequestDTO dto) {
@@ -100,8 +99,8 @@ public class CampusController {
 
     @PutMapping("/{id}")
     @Operation(
-            summary = "Cadastrar Campus",
-            description = "Cadastrar um novo campus"
+            summary = "Atualizar Campus",
+            description = "Atualiza um campus existente"
     )
     @ApiResponse(responseCode = "200", description = "Campus atualizado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
