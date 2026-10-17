@@ -11,6 +11,8 @@ public interface CampusRepository extends JpaRepository<Campus, Long> {
 
     boolean existsByNome(String nome);
     boolean existsByAcronimo(String acronimo);
+    boolean existsByNomeAndIdNot(String nome, Long id);
+    boolean existsByAcronimoAndIdNot(String acronimo, Long id);
 
     List<Campus> findByNomeContainingIgnoreCase(String nome);
     List<Campus> findAllByOrderByNomeAsc();

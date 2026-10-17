@@ -97,4 +97,20 @@ public class CampusController {
 
         return ResponseEntity.ok(campusService.filtrar(cidade));
     }
+
+    @PutMapping("/{id}")
+    @Operation(
+            summary = "Cadastrar Campus",
+            description = "Cadastrar um novo campus"
+    )
+    @ApiResponse(responseCode = "200", description = "Campus atualizado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    @ApiResponse(responseCode = "404", description = "Campus não encontrado")
+    @ApiResponse(responseCode = "409", description = "Nome ou Acrônimo não disponível")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<CampusResponseDTO> atualizar(@Parameter(description = "ID do campus") @PathVariable Long id,
+                                                       @Valid @RequestBody CampusRequestDTO dto) {
+
+        return ResponseEntity.ok(campusService.atualizar(id, dto));
+    }
 }

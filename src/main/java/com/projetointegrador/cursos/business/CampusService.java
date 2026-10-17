@@ -86,4 +86,31 @@ public class CampusService {
                 .map(campusMapper::toResponseDTO)
                 .toList();
     }
+
+    @Transactional
+    public CampusResponseDTO atualizar(Long id, CampusRequestDTO dto) {
+
+        Campus entity = buscarEntidadePorId(id);
+
+        verificarNomeParaAtualizar(dto.nome(), id);
+        verificarAcronimoParaAtualizar(dto.acronimo(), id);
+
+        campusMapper.updateEntityFromDTO(dto, entity);
+
+        return campusMapper.toResponseDTO(campusRepository.saveAndFlush(entity));
+    }
+
+    private void verificarNomeParaAtualizar(String nome, Long id) {
+
+        if (campusRepository.existsByNomeAndIdNot(nome, id)) {
+            throw new ConflictException("Nome informado não disponível: " + nome);
+        }
+    }
+
+    private void verificarAcronimoParaAtualizar(String acronimo, Long id) {
+
+        if (campusRepository.existsByAcronimoAndIdNot(acronimo, id)) {
+            throw new ConflictException("Acrônimo informa não disponível: " + acronimo);
+        }
+    }
 }
