@@ -13,6 +13,7 @@ public interface CampusMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
+    @Mapping(target = "cursos", ignore = true)
     Campus toEntity(CampusRequestDTO dto);
 
     CampusResponseDTO toResponseDTO(Campus entity);
@@ -20,5 +21,6 @@ public interface CampusMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
-    void updateEntityFromDTO(CampusRequestDTO dto, @MappingTarget Campus entiyt);
+    @Mapping(target = "cursos", ignore = true)
+    void updateEntityFromDTO(CampusRequestDTO dto, @MappingTarget Campus entity);
 }

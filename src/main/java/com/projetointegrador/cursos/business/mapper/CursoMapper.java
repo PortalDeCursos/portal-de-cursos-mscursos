@@ -14,13 +14,16 @@ public interface CursoMapper {
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "disciplinas", ignore = true)
+    @Mapping(target = "campus", ignore = true)
     Curso toEntity(CursoRequestDTO dto);
 
+    @Mapping(target = "campusId", source = "campus.id")
     CursoResponseDTO toResponseDTO(Curso entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "disciplinas", ignore = true)
+    @Mapping(target = "campus", ignore = true)
     void updateEntityFromDTO(CursoRequestDTO dto, @MappingTarget Curso entity);
 }

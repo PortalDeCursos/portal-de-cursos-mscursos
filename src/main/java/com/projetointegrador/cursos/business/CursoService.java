@@ -3,12 +3,14 @@ package com.projetointegrador.cursos.business;
 import com.projetointegrador.cursos.business.dto.request.CursoRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
 import com.projetointegrador.cursos.business.mapper.CursoMapper;
+import com.projetointegrador.cursos.infrastructure.entity.Campus;
 import com.projetointegrador.cursos.infrastructure.entity.Curso;
 import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
 import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
 import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
+import com.projetointegrador.cursos.infrastructure.repository.CampusRepository;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,26 +24,38 @@ public class CursoService {
 
     private final CursoRepository cursoRepository;
     private final CursoMapper cursoMapper;
+    private final CampusRepository campusRepository;
 
     @Transactional
     public CursoResponseDTO cadastrar(CursoRequestDTO dto) {
 
-        verificarNome(dto.nome());
-        verificarAcronimo(dto.acronimo());
+        Campus campus = buscarCampusPorId(dto.campusId());
 
-        return cursoMapper.toResponseDTO(cursoRepository.save(cursoMapper.toEntity(dto)));
+        verificarNome(campus.getId() ,dto.nome());
+        verificarAcronimo(campus.getId(), dto.acronimo());
+
+        Curso curso = cursoMapper.toEntity(dto);
+        curso.setCampus(campus);
+
+        return cursoMapper.toResponseDTO(cursoRepository.save(curso));
     }
 
-    private void verificarNome(String nome) {
+    private Campus buscarCampusPorId(Long id) {
 
-        if (cursoRepository.existsByNomeIgnoreCase(nome)) {
+        return campusRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campus não encontrado com id informado: " + id));
+    }
+
+    private void verificarNome(Long campusId, String nome) {
+
+        if (cursoRepository.existsByCampusIdAndNomeIgnoreCase(campusId, nome)) {
             throw new ConflictException("Este nome já está em uso por outro curso: " + nome);
         }
     }
 
-    private void verificarAcronimo(String acronimo) {
+    private void verificarAcronimo(Long campusId, String acronimo) {
 
-        if (cursoRepository.existsByAcronimoIgnoreCase(acronimo)) {
+        if (cursoRepository.existsByCampusIdAndAcronimoIgnoreCase(campusId, acronimo)) {
             throw new ConflictException("Este acrônimo já está em uso por outro curso: " + acronimo);
         }
     }

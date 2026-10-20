@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public record CursoResponseDTO(
 
         Long id,
+        Long campusId,
         String nome,
         String acronimo,
         GrauEnum grau,

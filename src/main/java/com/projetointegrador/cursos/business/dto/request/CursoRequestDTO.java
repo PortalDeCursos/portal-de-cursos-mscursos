@@ -42,7 +42,10 @@ public record CursoRequestDTO (
 
         @NotBlank(message = "Descrição é obrigatória")
         @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
-        String descricao
+        String descricao,
+
+        @NotNull(message = "Id do Campus é obrigatório")
+        Long campusId
 ) {
 
 }

@@ -70,4 +70,8 @@ public class Curso {
     @OneToMany(mappedBy = "curso")
     @Builder.Default
     private List<Disciplina> disciplinas = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "campus_id", nullable = false)
+    private Campus campus;
 }
