@@ -18,6 +18,7 @@ public interface CursoMapper {
     Curso toEntity(CursoRequestDTO dto);
 
     @Mapping(target = "campusId", source = "campus.id")
+    @Mapping(target = "campusNome", source = "campus.nome")
     CursoResponseDTO toResponseDTO(Curso entity);
 
     @Mapping(target = "id", ignore = true)
