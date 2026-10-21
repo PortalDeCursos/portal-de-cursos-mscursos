@@ -85,7 +85,8 @@ public class CursoService {
 
     @Transactional(readOnly = true)
     public Page<CursoResponseDTO> buscar(GrauEnum grau, TurnoEnum turno,
-                                         ModalidadeEnum modalidade, Pageable pageable) {
+                                         ModalidadeEnum modalidade, Long areaId,
+                                         Pageable pageable) {
 
         Page<Curso> cursos;
 
@@ -95,6 +96,8 @@ public class CursoService {
             cursos = cursoRepository.findByTurno(turno, pageable);
         } else if (modalidade != null) {
             cursos = cursoRepository.findByModalidade(modalidade, pageable);
+        } else if (areaId != null) {
+            cursos = cursoRepository.findByAreaConhecimentoId(areaId, pageable);
         } else {
             cursos = cursoRepository.findAll(pageable);
         }
