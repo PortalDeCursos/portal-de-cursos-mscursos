@@ -102,7 +102,7 @@ public class CursoController {
     )
     @ApiResponse(responseCode = "200", description = "Curso atualizado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "404", description = "Curso não encontrado")
+    @ApiResponse(responseCode = "404", description = "Curso ou área do conhecimento não encontrado")
     @ApiResponse(responseCode = "409", description = "Nome ou acrônimo já em uso por outro curso neste campus")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     public ResponseEntity<CursoResponseDTO> atualizar(@Parameter(description = "ID do curso") @PathVariable Long id,

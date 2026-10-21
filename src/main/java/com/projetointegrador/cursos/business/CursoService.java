@@ -115,12 +115,14 @@ public class CursoService {
     public CursoResponseDTO atualizar(Long id, CursoRequestDTO dto) {
 
         Curso curso = buscarEntidadePorId(id);
+        AreaConhecimento area = buscarAreaPorId(dto.areaId());
         Long campusId = curso.getCampus().getId();
 
         verificarNomeParaAtualizar(campusId, dto.nome(), id);
         verificarAcronimoParaAtualizar(campusId, dto.acronimo(), id);
 
         cursoMapper.updateEntityFromDTO(dto, curso);
+        curso.setAreaConhecimento(area);
 
         return cursoMapper.toResponseDTO(cursoRepository.saveAndFlush(curso));
     }
