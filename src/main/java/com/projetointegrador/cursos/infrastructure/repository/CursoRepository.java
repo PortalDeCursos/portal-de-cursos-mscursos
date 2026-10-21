@@ -22,6 +22,6 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
     Page<Curso> findByModalidade(ModalidadeEnum modalidade, Pageable pageable);
     Page<Curso> findByCampusId(Long campusId, Pageable pageable);
 
-    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Long id);
-    boolean existsByAcronimoIgnoreCaseAndIdNot(String acronimo, Long id);
+    boolean existsByCampusIdAndNomeIgnoreCaseAndIdNot(Long campusId, String nome, Long id);
+    boolean existsByCampusIdAndAcronimoIgnoreCaseAndIdNot(Long campusId, String acronimo, Long id);
 }

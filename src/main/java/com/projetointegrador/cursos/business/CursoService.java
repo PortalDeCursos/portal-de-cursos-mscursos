@@ -97,31 +97,32 @@ public class CursoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com esse id: " + id));
     }
 
-    private void verificarNomeParaAtualizar(String nome, Long id) {
-
-        if (cursoRepository.existsByNomeIgnoreCaseAndIdNot(nome, id)) {
-            throw new ConflictException("Este nome já está em uso por outro curso: " + nome);
-        }
-    }
-
-    private void verificarAcronimoParaAtualizar(String acronimo, Long id) {
-
-        if (cursoRepository.existsByAcronimoIgnoreCaseAndIdNot(acronimo, id)) {
-            throw new ConflictException("Este acrônimo já está em uso por outro curso: " + acronimo);
-        }
-    }
-
     @Transactional
     public CursoResponseDTO atualizar(Long id, CursoRequestDTO dto) {
 
-        Curso entity = buscarEntidadePorId(id);
+        Curso curso = buscarEntidadePorId(id);
+        Long campusId = curso.getCampus().getId();
 
-        verificarNomeParaAtualizar(dto.nome(), id);
-        verificarAcronimoParaAtualizar(dto.acronimo(), id);
+        verificarNomeParaAtualizar(campusId, dto.nome(), id);
+        verificarAcronimoParaAtualizar(campusId, dto.acronimo(), id);
 
-        cursoMapper.updateEntityFromDTO(dto, entity);
+        cursoMapper.updateEntityFromDTO(dto, curso);
 
-        return cursoMapper.toResponseDTO(cursoRepository.saveAndFlush(entity));
+        return cursoMapper.toResponseDTO(cursoRepository.saveAndFlush(curso));
+    }
+
+    private void verificarNomeParaAtualizar(Long campusId, String nome, Long id) {
+
+        if (cursoRepository.existsByCampusIdAndNomeIgnoreCaseAndIdNot(campusId, nome, id)) {
+            throw new ConflictException("Já existe outro curso com este nome neste campus: " + nome);
+        }
+    }
+
+    private void verificarAcronimoParaAtualizar(Long campusId, String acronimo, Long id) {
+
+        if (cursoRepository.existsByCampusIdAndAcronimoIgnoreCaseAndIdNot(campusId, acronimo, id)) {
+            throw new ConflictException("Já existe outro curso com este acrônimo neste campus: " + acronimo);
+        }
     }
 
     @Transactional
