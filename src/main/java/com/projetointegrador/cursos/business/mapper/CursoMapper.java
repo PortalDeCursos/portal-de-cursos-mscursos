@@ -15,10 +15,13 @@ public interface CursoMapper {
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "disciplinas", ignore = true)
     @Mapping(target = "campus", ignore = true)
+    @Mapping(target = "areaConhecimento", ignore = true)
     Curso toEntity(CursoRequestDTO dto);
 
     @Mapping(target = "campusId", source = "campus.id")
     @Mapping(target = "campusNome", source = "campus.nome")
+    @Mapping(target = "areaId", source = "areaConhecimento.id")
+    @Mapping(target = "areaNome", source = "areaConhecimento.nome")
     CursoResponseDTO toResponseDTO(Curso entity);
 
     @Mapping(target = "id", ignore = true)
@@ -26,5 +29,6 @@ public interface CursoMapper {
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "disciplinas", ignore = true)
     @Mapping(target = "campus", ignore = true)
+    @Mapping(target = "areaConhecimento", ignore = true)
     void updateEntityFromDTO(CursoRequestDTO dto, @MappingTarget Curso entity);
 }

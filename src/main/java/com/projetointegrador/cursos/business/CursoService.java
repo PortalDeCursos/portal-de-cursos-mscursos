@@ -3,6 +3,7 @@ package com.projetointegrador.cursos.business;
 import com.projetointegrador.cursos.business.dto.request.CursoRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
 import com.projetointegrador.cursos.business.mapper.CursoMapper;
+import com.projetointegrador.cursos.infrastructure.entity.AreaConhecimento;
 import com.projetointegrador.cursos.infrastructure.entity.Campus;
 import com.projetointegrador.cursos.infrastructure.entity.Curso;
 import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
@@ -10,6 +11,7 @@ import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
 import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
+import com.projetointegrador.cursos.infrastructure.repository.AreaConhecimentoRepository;
 import com.projetointegrador.cursos.infrastructure.repository.CampusRepository;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,17 +27,20 @@ public class CursoService {
     private final CursoRepository cursoRepository;
     private final CursoMapper cursoMapper;
     private final CampusRepository campusRepository;
+    private final AreaConhecimentoRepository areaConhecimentoRepository;
 
     @Transactional
     public CursoResponseDTO cadastrar(CursoRequestDTO dto) {
 
         Campus campus = buscarCampusPorId(dto.campusId());
+        AreaConhecimento area = buscarAreaPorId(dto.areaId());
 
         verificarNome(campus.getId() ,dto.nome());
         verificarAcronimo(campus.getId(), dto.acronimo());
 
         Curso curso = cursoMapper.toEntity(dto);
         curso.setCampus(campus);
+        curso.setAreaConhecimento(area);
 
         return cursoMapper.toResponseDTO(cursoRepository.save(curso));
     }
@@ -46,17 +51,23 @@ public class CursoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Campus não encontrado com id informado: " + id));
     }
 
+    private AreaConhecimento buscarAreaPorId(Long id) {
+
+        return areaConhecimentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada com id informado: " + id));
+    }
+
     private void verificarNome(Long campusId, String nome) {
 
         if (cursoRepository.existsByCampusIdAndNomeIgnoreCase(campusId, nome)) {
-            throw new ConflictException("Este nome já está em uso por outro curso: " + nome);
+            throw new ConflictException("Este nome já está em uso por outro curso neste campus: " + nome);
         }
     }
 
     private void verificarAcronimo(Long campusId, String acronimo) {
 
         if (cursoRepository.existsByCampusIdAndAcronimoIgnoreCase(campusId, acronimo)) {
-            throw new ConflictException("Este acrônimo já está em uso por outro curso: " + acronimo);
+            throw new ConflictException("Este acrônimo já está em uso por outro curso neste campus: " + acronimo);
         }
     }
 

@@ -13,6 +13,7 @@ public interface AreaConhecimentoMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
+    @Mapping(target = "cursos", ignore = true)
     AreaConhecimento toEntity(AreaConhecimentoRequestDTO dto);
 
     AreaConhecimentoResponseDTO toResponseDTO(AreaConhecimento entity);
@@ -20,5 +21,6 @@ public interface AreaConhecimentoMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
+    @Mapping(target = "cursos", ignore = true)
     void updateEntityFromDTO(AreaConhecimentoRequestDTO dto, @MappingTarget AreaConhecimento entity);
 }

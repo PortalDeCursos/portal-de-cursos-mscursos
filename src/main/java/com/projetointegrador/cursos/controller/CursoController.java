@@ -36,7 +36,7 @@ public class CursoController {
     )
     @ApiResponse(responseCode = "201", description = "Curso cadastrado com sucesso")
     @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    @ApiResponse(responseCode = "404", description = "Campus não encontrado")
+    @ApiResponse(responseCode = "404", description = "Campus ou área do conhecimento não encontrado")
     @ApiResponse(responseCode = "409", description = "Nome ou acrônimo já em uso")
     @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     public ResponseEntity<CursoResponseDTO> cadastrar(@Valid @RequestBody CursoRequestDTO dto) {

@@ -74,4 +74,8 @@ public class Curso {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "campus_id", nullable = false)
     private Campus campus;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "area_conhecimento_id", nullable = false)
+    private AreaConhecimento areaConhecimento;
 }

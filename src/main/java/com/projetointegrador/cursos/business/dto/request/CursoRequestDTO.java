@@ -45,7 +45,10 @@ public record CursoRequestDTO (
         String descricao,
 
         @NotNull(message = "Id do Campus é obrigatório")
-        Long campusId
+        Long campusId,
+
+        @NotNull(message = "Id da Área de Conhecimento é obrigatório")
+        Long areaId
 ) {
 
 }
