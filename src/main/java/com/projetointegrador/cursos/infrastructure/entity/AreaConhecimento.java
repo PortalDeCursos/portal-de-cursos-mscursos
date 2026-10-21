@@ -7,6 +7,8 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "areas_conhecimento")
@@ -34,4 +36,8 @@ public class AreaConhecimento {
     @UpdateTimestamp(source = SourceType.DB)
     @Column(name = "atualizado_em", insertable = false, nullable = false)
     private LocalDateTime atualizadoEm;
+
+    @OneToMany(mappedBy = "areaConhecimento")
+    @Builder.Default
+    private List<Curso> cursos = new ArrayList<>();
 }

@@ -14,13 +14,15 @@ import java.util.List;
 @Repository
 public interface CursoRepository extends JpaRepository<Curso, Long> {
 
-    boolean existsByNomeIgnoreCase(String nome);
-    boolean existsByAcronimoIgnoreCase(String acronimo);
+    boolean existsByCampusIdAndNomeIgnoreCase(Long campusId, String nome);
+    boolean existsByCampusIdAndAcronimoIgnoreCase(Long campusId, String acronimo);
 
     Page<Curso> findByGrau(GrauEnum grau, Pageable pageable);
     Page<Curso> findByTurno(TurnoEnum turno, Pageable pageable);
     Page<Curso> findByModalidade(ModalidadeEnum modalidade, Pageable pageable);
+    Page<Curso> findByCampusId(Long campusId, Pageable pageable);
+    Page<Curso> findByAreaConhecimentoId(Long areaId, Pageable pageable);
 
-    boolean existsByNomeIgnoreCaseAndIdNot(String nome, Long id);
-    boolean existsByAcronimoIgnoreCaseAndIdNot(String acronimo, Long id);
+    boolean existsByCampusIdAndNomeIgnoreCaseAndIdNot(Long campusId, String nome, Long id);
+    boolean existsByCampusIdAndAcronimoIgnoreCaseAndIdNot(Long campusId, String acronimo, Long id);
 }

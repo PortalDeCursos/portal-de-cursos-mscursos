@@ -3,12 +3,16 @@ package com.projetointegrador.cursos.controller;
 import com.projetointegrador.cursos.business.CampusService;
 import com.projetointegrador.cursos.business.dto.request.CampusRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CampusResponseDTO;
+import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -95,6 +99,20 @@ public class CampusController {
     public ResponseEntity<List<CampusResponseDTO>> filtar(@RequestParam String cidade) {
 
         return ResponseEntity.ok(campusService.filtrar(cidade));
+    }
+
+    @GetMapping("/{id}/cursos")
+    @Operation(
+            summary = "Listar Cursos do Campus",
+            description = "Lista de forma paginada os cursos ofertados em um campus. Padrão: 10 por página, ordenados por nome"
+    )
+    @ApiResponse(responseCode = "200", description = "Cursos listados com sucesso")
+    @ApiResponse(responseCode = "404", description = "Campus não encontrado")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    public ResponseEntity<Page<CursoResponseDTO>> listarCursos(@Parameter(description = "ID do campus") @PathVariable Long id,
+                                                               @PageableDefault(size = 10, sort = "nome") Pageable pageable) {
+
+        return ResponseEntity.ok(campusService.listarCursos(id, pageable));
     }
 
     @PutMapping("/{id}")

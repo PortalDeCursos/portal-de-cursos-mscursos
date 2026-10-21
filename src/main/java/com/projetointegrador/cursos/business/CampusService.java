@@ -2,12 +2,17 @@ package com.projetointegrador.cursos.business;
 
 import com.projetointegrador.cursos.business.dto.request.CampusRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CampusResponseDTO;
+import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
 import com.projetointegrador.cursos.business.mapper.CampusMapper;
+import com.projetointegrador.cursos.business.mapper.CursoMapper;
 import com.projetointegrador.cursos.infrastructure.entity.Campus;
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
 import com.projetointegrador.cursos.infrastructure.repository.CampusRepository;
+import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +24,8 @@ public class CampusService {
 
     private final CampusRepository campusRepository;
     private final CampusMapper campusMapper;
+    private final CursoRepository cursoRepository;
+    private final CursoMapper cursoMapper;
 
     @Transactional
     public CampusResponseDTO cadastrar(CampusRequestDTO dto) {
@@ -85,6 +92,16 @@ public class CampusService {
                 .stream()
                 .map(campusMapper::toResponseDTO)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> listarCursos(Long campusId, Pageable pageable) {
+
+        if (!campusRepository.existsById(campusId)) {
+            throw new ResourceNotFoundException("Campus não encontrado com id informado: " + campusId);
+        }
+
+        return cursoRepository.findByCampusId(campusId, pageable).map(cursoMapper::toResponseDTO);
     }
 
     @Transactional
