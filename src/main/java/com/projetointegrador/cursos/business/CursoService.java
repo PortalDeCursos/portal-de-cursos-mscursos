@@ -1,0 +1,151 @@
+package com.projetointegrador.cursos.business;
+
+import com.projetointegrador.cursos.business.dto.request.CursoRequestDTO;
+import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
+import com.projetointegrador.cursos.business.mapper.CursoMapper;
+import com.projetointegrador.cursos.infrastructure.entity.AreaConhecimento;
+import com.projetointegrador.cursos.infrastructure.entity.Campus;
+import com.projetointegrador.cursos.infrastructure.entity.Curso;
+import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
+import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
+import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
+import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
+import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
+import com.projetointegrador.cursos.infrastructure.repository.AreaConhecimentoRepository;
+import com.projetointegrador.cursos.infrastructure.repository.CampusRepository;
+import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class CursoService {
+
+    private final CursoRepository cursoRepository;
+    private final CursoMapper cursoMapper;
+    private final CampusRepository campusRepository;
+    private final AreaConhecimentoRepository areaConhecimentoRepository;
+
+    @Transactional
+    public CursoResponseDTO cadastrar(CursoRequestDTO dto) {
+
+        Campus campus = buscarCampusPorId(dto.campusId());
+        AreaConhecimento area = buscarAreaPorId(dto.areaId());
+
+        verificarNome(campus.getId() ,dto.nome());
+        verificarAcronimo(campus.getId(), dto.acronimo());
+
+        Curso curso = cursoMapper.toEntity(dto);
+        curso.setCampus(campus);
+        curso.setAreaConhecimento(area);
+
+        return cursoMapper.toResponseDTO(cursoRepository.save(curso));
+    }
+
+    private Campus buscarCampusPorId(Long id) {
+
+        return campusRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campus não encontrado com id informado: " + id));
+    }
+
+    private AreaConhecimento buscarAreaPorId(Long id) {
+
+        return areaConhecimentoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Área não encontrada com id informado: " + id));
+    }
+
+    private void verificarNome(Long campusId, String nome) {
+
+        if (cursoRepository.existsByCampusIdAndNomeIgnoreCase(campusId, nome)) {
+            throw new ConflictException("Este nome já está em uso por outro curso neste campus: " + nome);
+        }
+    }
+
+    private void verificarAcronimo(Long campusId, String acronimo) {
+
+        if (cursoRepository.existsByCampusIdAndAcronimoIgnoreCase(campusId, acronimo)) {
+            throw new ConflictException("Este acrônimo já está em uso por outro curso neste campus: " + acronimo);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public CursoResponseDTO buscarPorId(Long id) {
+
+        return cursoMapper.toResponseDTO(buscarEntidadePorId(id));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> listar(Pageable pageable) {
+
+        return cursoRepository.findAll(pageable).map(cursoMapper::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> buscar(GrauEnum grau, TurnoEnum turno,
+                                         ModalidadeEnum modalidade, Long areaId,
+                                         Pageable pageable) {
+
+        Page<Curso> cursos;
+
+        if (grau != null) {
+            cursos = cursoRepository.findByGrau(grau, pageable);
+        } else if (turno != null) {
+            cursos = cursoRepository.findByTurno(turno, pageable);
+        } else if (modalidade != null) {
+            cursos = cursoRepository.findByModalidade(modalidade, pageable);
+        } else if (areaId != null) {
+            cursos = cursoRepository.findByAreaConhecimentoId(areaId, pageable);
+        } else {
+            cursos = cursoRepository.findAll(pageable);
+        }
+
+        return cursos.map(cursoMapper::toResponseDTO);
+    }
+
+    private Curso buscarEntidadePorId(Long id) {
+
+        return cursoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Curso não encontrado com esse id: " + id));
+    }
+
+    @Transactional
+    public CursoResponseDTO atualizar(Long id, CursoRequestDTO dto) {
+
+        Curso curso = buscarEntidadePorId(id);
+        AreaConhecimento area = buscarAreaPorId(dto.areaId());
+        Long campusId = curso.getCampus().getId();
+
+        verificarNomeParaAtualizar(campusId, dto.nome(), id);
+        verificarAcronimoParaAtualizar(campusId, dto.acronimo(), id);
+
+        cursoMapper.updateEntityFromDTO(dto, curso);
+        curso.setAreaConhecimento(area);
+
+        return cursoMapper.toResponseDTO(cursoRepository.saveAndFlush(curso));
+    }
+
+    private void verificarNomeParaAtualizar(Long campusId, String nome, Long id) {
+
+        if (cursoRepository.existsByCampusIdAndNomeIgnoreCaseAndIdNot(campusId, nome, id)) {
+            throw new ConflictException("Já existe outro curso com este nome neste campus: " + nome);
+        }
+    }
+
+    private void verificarAcronimoParaAtualizar(Long campusId, String acronimo, Long id) {
+
+        if (cursoRepository.existsByCampusIdAndAcronimoIgnoreCaseAndIdNot(campusId, acronimo, id)) {
+            throw new ConflictException("Já existe outro curso com este acrônimo neste campus: " + acronimo);
+        }
+    }
+
+    @Transactional
+    public void deletar(Long id) {
+
+        Curso entity = buscarEntidadePorId(id);
+
+        cursoRepository.delete(entity);
+    }
+}

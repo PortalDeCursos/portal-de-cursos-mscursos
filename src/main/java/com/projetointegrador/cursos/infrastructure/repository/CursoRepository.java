@@ -1,0 +1,28 @@
+package com.projetointegrador.cursos.infrastructure.repository;
+
+import com.projetointegrador.cursos.infrastructure.entity.Curso;
+import com.projetointegrador.cursos.infrastructure.enums.GrauEnum;
+import com.projetointegrador.cursos.infrastructure.enums.ModalidadeEnum;
+import com.projetointegrador.cursos.infrastructure.enums.TurnoEnum;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface CursoRepository extends JpaRepository<Curso, Long> {
+
+    boolean existsByCampusIdAndNomeIgnoreCase(Long campusId, String nome);
+    boolean existsByCampusIdAndAcronimoIgnoreCase(Long campusId, String acronimo);
+
+    Page<Curso> findByGrau(GrauEnum grau, Pageable pageable);
+    Page<Curso> findByTurno(TurnoEnum turno, Pageable pageable);
+    Page<Curso> findByModalidade(ModalidadeEnum modalidade, Pageable pageable);
+    Page<Curso> findByCampusId(Long campusId, Pageable pageable);
+    Page<Curso> findByAreaConhecimentoId(Long areaId, Pageable pageable);
+
+    boolean existsByCampusIdAndNomeIgnoreCaseAndIdNot(Long campusId, String nome, Long id);
+    boolean existsByCampusIdAndAcronimoIgnoreCaseAndIdNot(Long campusId, String acronimo, Long id);
+}

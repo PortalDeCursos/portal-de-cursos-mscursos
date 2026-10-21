@@ -1,0 +1,141 @@
+package com.projetointegrador.cursos.business;
+
+import com.projetointegrador.cursos.business.dto.request.CampusRequestDTO;
+import com.projetointegrador.cursos.business.dto.response.CampusResponseDTO;
+import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
+import com.projetointegrador.cursos.business.mapper.CampusMapper;
+import com.projetointegrador.cursos.business.mapper.CursoMapper;
+import com.projetointegrador.cursos.infrastructure.entity.Campus;
+import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
+import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
+import com.projetointegrador.cursos.infrastructure.repository.CampusRepository;
+import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CampusService {
+
+    private final CampusRepository campusRepository;
+    private final CampusMapper campusMapper;
+    private final CursoRepository cursoRepository;
+    private final CursoMapper cursoMapper;
+
+    @Transactional
+    public CampusResponseDTO cadastrar(CampusRequestDTO dto) {
+
+        verificarNome(dto.nome());
+        verificarAcronimo(dto.acronimo());
+
+        Campus campus = campusMapper.toEntity(dto);
+
+        return campusMapper.toResponseDTO(campusRepository.save(campus));
+    }
+
+    private void verificarNome(String nome) {
+
+        if (campusRepository.existsByNome(nome)) {
+            throw new ConflictException("Já existe um Campus com esse nome: " + nome);
+        }
+    }
+
+    private void verificarAcronimo(String acronimo) {
+
+        if (campusRepository.existsByAcronimo(acronimo)) {
+            throw new ConflictException("Já existe um Campus com esse acrônimo: " + acronimo);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<CampusResponseDTO> buscarPorNome(String nome) {
+
+        return campusRepository.findByNomeContainingIgnoreCase(nome)
+                .stream()
+                .map(campusMapper::toResponseDTO)
+                .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public CampusResponseDTO buscarPorId(Long id) {
+
+        Campus campus = buscarEntidadePorId(id);
+
+        return campusMapper.toResponseDTO(campus);
+    }
+
+    private Campus buscarEntidadePorId(Long id) {
+
+        return campusRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campus não encontrado com id informado: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<CampusResponseDTO> listar() {
+
+        return campusRepository.findAllByOrderByNomeAsc()
+                .stream()
+                .map(campusMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CampusResponseDTO> filtrar(String cidade) {
+
+        return campusRepository.findByCidadeIgnoreCase(cidade)
+                .stream()
+                .map(campusMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CursoResponseDTO> listarCursos(Long campusId, Pageable pageable) {
+
+        if (!campusRepository.existsById(campusId)) {
+            throw new ResourceNotFoundException("Campus não encontrado com id informado: " + campusId);
+        }
+
+        return cursoRepository.findByCampusId(campusId, pageable).map(cursoMapper::toResponseDTO);
+    }
+
+    @Transactional
+    public CampusResponseDTO atualizar(Long id, CampusRequestDTO dto) {
+
+        Campus entity = buscarEntidadePorId(id);
+
+        verificarNomeParaAtualizar(dto.nome(), id);
+        verificarAcronimoParaAtualizar(dto.acronimo(), id);
+
+        campusMapper.updateEntityFromDTO(dto, entity);
+
+        return campusMapper.toResponseDTO(campusRepository.saveAndFlush(entity));
+    }
+
+    private void verificarNomeParaAtualizar(String nome, Long id) {
+
+        if (campusRepository.existsByNomeAndIdNot(nome, id)) {
+            throw new ConflictException("Nome informado não disponível: " + nome);
+        }
+    }
+
+    private void verificarAcronimoParaAtualizar(String acronimo, Long id) {
+
+        if (campusRepository.existsByAcronimoAndIdNot(acronimo, id)) {
+            throw new ConflictException("Acrônimo informa não disponível: " + acronimo);
+        }
+    }
+
+    @Transactional
+    public void deletar(Long id) {
+
+        Campus entity = buscarEntidadePorId(id);
+
+        campusRepository.delete(entity);
+    }
+}
