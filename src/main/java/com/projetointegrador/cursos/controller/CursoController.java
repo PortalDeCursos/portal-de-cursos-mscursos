@@ -22,7 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/cursos")
+@RequestMapping("/api/cursos")
 @RequiredArgsConstructor
 @Tag(name = "Cursos", description = "Gerenciamento de Cursos")
 public class CursoController {

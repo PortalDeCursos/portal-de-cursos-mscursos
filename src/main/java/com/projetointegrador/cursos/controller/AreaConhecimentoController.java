@@ -17,7 +17,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/areas-conhecimento")
+@RequestMapping("/api/areas-conhecimento")
 @RequiredArgsConstructor
 @Tag(name = "Áreas do Conhecimento", description = "Gerenciamento das Áreas de Conhecimento dos Cursos")
 public class AreaConhecimentoController {
