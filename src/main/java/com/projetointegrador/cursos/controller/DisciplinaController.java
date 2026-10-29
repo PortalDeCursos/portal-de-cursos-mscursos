@@ -18,7 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/disciplinas")
+@RequestMapping("/disciplinas")
 @RequiredArgsConstructor
 @Tag(name = "Disciplinas", description = "Gerenciamento de Disciplinas")
 public class DisciplinaController {
