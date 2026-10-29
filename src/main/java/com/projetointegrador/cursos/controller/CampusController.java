@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/campus")
+@RequestMapping("/campus")
 @RequiredArgsConstructor
 @Tag(name = "Campus", description = "Gerenciamento de Campus")
 public class CampusController {
