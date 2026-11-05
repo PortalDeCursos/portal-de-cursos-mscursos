@@ -306,4 +306,86 @@ public class CampusServiceTest {
         verifyNoInteractions(cursoRepository, cursoMapper);
         verifyNoMoreInteractions(campusRepository);
     }
+
+    @Test
+    void deveAtualizarCampusComSucesso() {
+        // GIVEN
+        when(campusRepository.findById(1L)).thenReturn(Optional.of(campus));
+        when(campusRepository.existsByNomeAndIdNot("Campus Nova Cruz", 1L)).thenReturn(false);
+        when(campusRepository.existsByAcronimoAndIdNot("IFNC", 1L)).thenReturn(false);
+        doNothing().when(campusMapper).updateEntityFromDTO(requestDTO, campus);
+        when(campusRepository.saveAndFlush(campus)).thenReturn(campus);
+        when(campusMapper.toResponseDTO(campus)).thenReturn(responseDTO);
+
+        // WHEN
+        CampusResponseDTO resultado = campusService.atualizar(1L, requestDTO);
+
+        // THEN
+        assertEquals(responseDTO, resultado);
+
+        verify(campusRepository).findById(1L);
+        verify(campusRepository).existsByNomeAndIdNot("Campus Nova Cruz", 1L);
+        verify(campusRepository).existsByAcronimoAndIdNot("IFNC", 1L);
+        verify(campusMapper).updateEntityFromDTO(requestDTO, campus);
+        verify(campusRepository).saveAndFlush(campus);
+        verify(campusMapper).toResponseDTO(campus);
+        verifyNoMoreInteractions(campusRepository, campusMapper);
+    }
+
+    @Test
+    void deveLancarExcecaoAoAtualizarQuandoCampusNaoExistir() {
+        // GIVEN
+        when(campusRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // WHEN + THEN
+        ResourceNotFoundException excecao = assertThrows(ResourceNotFoundException.class,
+                () -> campusService.atualizar(99L, requestDTO));
+
+        assertThat(excecao.getMessage()).contains("99");
+
+        verify(campusRepository).findById(99L);
+        verify(campusRepository, never()).saveAndFlush(any());
+        verifyNoInteractions(campusMapper);
+        verifyNoMoreInteractions(campusRepository);
+    }
+
+    @Test
+    void deveLancarConflitoAoAtualizarQuandoNomeJaEstiverEmUso() {
+        // GIVEN
+        when(campusRepository.findById(1L)).thenReturn(Optional.of(campus));
+        when(campusRepository.existsByNomeAndIdNot("Campus Nova Cruz", 1L)).thenReturn(true);
+
+        // WHEN + THEN
+        ConflictException excecao = assertThrows(ConflictException.class,
+                () -> campusService.atualizar(1L, requestDTO));
+
+        assertThat(excecao.getMessage()).contains("Campus Nova Cruz");
+
+        verify(campusRepository).findById(1L);
+        verify(campusRepository).existsByNomeAndIdNot("Campus Nova Cruz", 1L);
+        verify(campusRepository, never()).saveAndFlush(any());
+        verifyNoInteractions(campusMapper);
+        verifyNoMoreInteractions(campusRepository);
+    }
+
+    @Test
+    void deveLancarConflitoAoAtualizarQuandoAcronimoJaEstiverEmUso() {
+        // GIVEN
+        when(campusRepository.findById(1L)).thenReturn(Optional.of(campus));
+        when(campusRepository.existsByNomeAndIdNot("Campus Nova Cruz", 1L)).thenReturn(false);
+        when(campusRepository.existsByAcronimoAndIdNot("IFNC", 1L)).thenReturn(true);
+
+        // WHEN + THEN
+        ConflictException excecao = assertThrows(ConflictException.class,
+                () -> campusService.atualizar(1L, requestDTO));
+
+        assertThat(excecao.getMessage()).contains("IFNC");
+
+        verify(campusRepository).findById(1L);
+        verify(campusRepository).existsByNomeAndIdNot("Campus Nova Cruz", 1L);
+        verify(campusRepository).existsByAcronimoAndIdNot("IFNC", 1L);
+        verify(campusRepository, never()).saveAndFlush(any());
+        verifyNoInteractions(campusMapper);
+        verifyNoMoreInteractions(campusRepository);
+    }
 }
