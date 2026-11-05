@@ -388,4 +388,35 @@ public class CampusServiceTest {
         verifyNoInteractions(campusMapper);
         verifyNoMoreInteractions(campusRepository);
     }
+
+    @Test
+    void deveDeletarCampusComSucesso() {
+        // GIVEN
+        when(campusRepository.findById(1L)).thenReturn(Optional.of(campus));
+        doNothing().when(campusRepository).delete(campus);
+
+        // WHEN
+        campusService.deletar(1L);
+
+        // THEN
+        verify(campusRepository).findById(1L);
+        verify(campusRepository).delete(campus);
+        verifyNoMoreInteractions(campusRepository);
+    }
+
+    @Test
+    void deveLancarExcecaoAoDeletarQuandoCampusNaoExistir() {
+        // GIVEN
+        when(campusRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // WHEN + THEN
+        ResourceNotFoundException excecao = assertThrows(ResourceNotFoundException.class,
+                () -> campusService.deletar(99L));
+
+        assertThat(excecao.getMessage()).contains("99");
+
+        verify(campusRepository).findById(99L);
+        verify(campusRepository, never()).delete(any());
+        verifyNoMoreInteractions(campusRepository);
+    }
 }
