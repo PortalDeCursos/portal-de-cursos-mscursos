@@ -50,5 +50,4 @@ public record CursoRequestDTO (
         @NotNull(message = "Id da Área de Conhecimento é obrigatório")
         Long areaId
 ) {
-
 }
