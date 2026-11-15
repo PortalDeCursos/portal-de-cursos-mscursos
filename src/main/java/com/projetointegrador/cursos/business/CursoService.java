@@ -3,6 +3,7 @@ package com.projetointegrador.cursos.business;
 import com.projetointegrador.cursos.business.dto.request.CursoRequestDTO;
 import com.projetointegrador.cursos.business.dto.response.CursoResponseDTO;
 import com.projetointegrador.cursos.business.mapper.CursoMapper;
+import com.projetointegrador.cursos.client.CoordenadorClient;
 import com.projetointegrador.cursos.infrastructure.entity.AreaConhecimento;
 import com.projetointegrador.cursos.infrastructure.entity.Campus;
 import com.projetointegrador.cursos.infrastructure.entity.Curso;
@@ -28,6 +29,7 @@ public class CursoService {
     private final CursoMapper cursoMapper;
     private final CampusRepository campusRepository;
     private final AreaConhecimentoRepository areaConhecimentoRepository;
+    private final CoordenadorClient coordenadorClient;
 
     @Transactional
     public CursoResponseDTO cadastrar(CursoRequestDTO dto) {
@@ -147,5 +149,26 @@ public class CursoService {
         Curso entity = buscarEntidadePorId(id);
 
         cursoRepository.delete(entity);
+    }
+
+    @Transactional
+    public CursoResponseDTO designarCoordenador(Long cursoId, Long coordenadorId, String token) {
+
+        Curso curso = buscarEntidadePorId(cursoId);
+
+        coordenadorClient.buscarPorId(coordenadorId, token);
+
+        verificarCoordenador(coordenadorId, cursoId);
+
+        curso.setCoordenadorId(coordenadorId);
+
+        return cursoMapper.toResponseDTO(cursoRepository.save(curso));
+    }
+
+    private void verificarCoordenador(Long coordenadorId, Long cursoId) {
+
+        if (cursoRepository.existsByCoordenadorIdAndIdNot(coordenadorId, cursoId)) {
+            throw new ConflictException("Este coordenador já está vinculado a outro curso: " + coordenadorId);
+        }
     }
 }
