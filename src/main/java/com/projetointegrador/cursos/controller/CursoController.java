@@ -125,4 +125,22 @@ public class CursoController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/coordenador/{coordenadorId}")
+    @Operation(
+            summary = "Designar Coordenador",
+            description = "Vincula um coordenador (do serviço de usuários) a um curso existente"
+    )
+    @ApiResponse(responseCode = "200", description = "Coordenador designado com sucesso")
+    @ApiResponse(responseCode = "401", description = "Token inválido ou ausente")
+    @ApiResponse(responseCode = "404", description = "Curso ou coordenador não encontrado")
+    @ApiResponse(responseCode = "409", description = "Coordenador já vinculado a outro curso")
+    @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    @ApiResponse(responseCode = "503", description = "Serviço de usuários indisponível")
+    public ResponseEntity<CursoResponseDTO> designarCoordenador(@Parameter(description = "ID do curso") @PathVariable Long id,
+                                                                @Parameter(description = "ID do coordenador") @PathVariable Long coordenadorId,
+                                                                @RequestHeader("Authorization") String token) {
+
+        return ResponseEntity.ok(cursoService.designarCoordenador(id, coordenadorId, token));
+    }
 }

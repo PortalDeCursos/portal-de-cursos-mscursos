@@ -24,6 +24,7 @@ public record CursoResponseDTO(
         Integer qtdDisciplinasOptativas,
         String descricao,
         LocalDateTime criadoEm,
-        LocalDateTime atualizadoEm
+        LocalDateTime atualizadoEm,
+        Long coordenadorId
 ) {
 }

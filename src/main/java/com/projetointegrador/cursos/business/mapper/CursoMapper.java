@@ -16,6 +16,7 @@ public interface CursoMapper {
     @Mapping(target = "disciplinas", ignore = true)
     @Mapping(target = "campus", ignore = true)
     @Mapping(target = "areaConhecimento", ignore = true)
+    @Mapping(target = "coordenadorId", ignore = true)
     Curso toEntity(CursoRequestDTO dto);
 
     @Mapping(target = "campusId", source = "campus.id")
@@ -30,5 +31,6 @@ public interface CursoMapper {
     @Mapping(target = "disciplinas", ignore = true)
     @Mapping(target = "campus", ignore = true)
     @Mapping(target = "areaConhecimento", ignore = true)
+    @Mapping(target = "coordenadorId", ignore = true)
     void updateEntityFromDTO(CursoRequestDTO dto, @MappingTarget Curso entity);
 }

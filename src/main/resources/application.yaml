@@ -19,3 +19,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+servico-usuarios:
+  url: http://localhost:8081/api/usuarios
