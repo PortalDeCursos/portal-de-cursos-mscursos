@@ -25,4 +25,6 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
 
     boolean existsByCampusIdAndNomeIgnoreCaseAndIdNot(Long campusId, String nome, Long id);
     boolean existsByCampusIdAndAcronimoIgnoreCaseAndIdNot(Long campusId, String acronimo, Long id);
+
+    boolean existsByCoordenadorIdAndIdNot(Long coordenadorId, Long id);
 }

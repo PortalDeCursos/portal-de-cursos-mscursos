@@ -2,6 +2,7 @@ package com.projetointegrador.cursos.infrastructure.exception.handler;
 
 import com.projetointegrador.cursos.infrastructure.exception.ConflictException;
 import com.projetointegrador.cursos.infrastructure.exception.ResourceNotFoundException;
+import com.projetointegrador.cursos.infrastructure.exception.ServicoIndisponivelException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -97,5 +98,15 @@ public class GlobalExceptionHandler {
         }
 
         return errors;
+    }
+
+    @ExceptionHandler(ServicoIndisponivelException.class)
+    public ProblemDetail handleServicoIndisponivelException(ServicoIndisponivelException ex) {
+
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+
+        problem.setTitle("Serviço indisponível");
+
+        return problem;
     }
 }

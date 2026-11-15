@@ -78,4 +78,7 @@ public class Curso {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "area_conhecimento_id", nullable = false)
     private AreaConhecimento areaConhecimento;
+
+    @Column(name = "coordenador_id", unique = true)
+    private Long coordenadorId;
 }
