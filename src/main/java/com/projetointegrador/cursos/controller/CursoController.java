@@ -126,7 +126,7 @@ public class CursoController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/coordenador/{coordenadorId}")
+    @PatchMapping("/{id}/coordenador/{coordenadorId}")
     @Operation(
             summary = "Designar Coordenador",
             description = "Vincula um coordenador (do serviço de usuários) a um curso existente"
