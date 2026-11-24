@@ -29,7 +29,7 @@ public class Curso {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "acronimo", nullable = false, unique = true, length = 10)
+    @Column(name = "acronimo", nullable = false, length = 10)
     private String acronimo;
 
     @Enumerated(EnumType.STRING)
