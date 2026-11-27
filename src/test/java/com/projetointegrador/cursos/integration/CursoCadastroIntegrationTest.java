@@ -1,5 +1,6 @@
 package com.projetointegrador.cursos.integration;
 
+import com.projetointegrador.cursos.infrastructure.entity.Curso;
 import com.projetointegrador.cursos.infrastructure.repository.AreaConhecimentoRepository;
 import com.projetointegrador.cursos.infrastructure.repository.CampusRepository;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
@@ -25,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class CursoCadastroIntegrationTest {
 
-    private static final String NOME_NOVO = "Sistemas para Internet";
-    private static final String ACRONIMO_NOVO = "TSI";
+    private static final String NOME_NOVO = "Curso Teste Integração";
+    private static final String ACRONIMO_NOVO = "CTESTE";
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,17 +43,26 @@ public class CursoCadastroIntegrationTest {
 
     private Long campusId;
     private Long areaId;
+    private String nomeExistente;
+    private String acronimoExistente;
 
     @BeforeEach
     void setUp() {
-        // GIVEN (comum): campus e área que já vêm da migration de seed
+        // GIVEN (comum): dados que já vêm do seed
         campusId = campusRepository.findAll().stream()
                 .filter(c -> c.getAcronimo().equals("IFNC"))
                 .findFirst().orElseThrow().getId();
 
         areaId = areaConhecimentoRepository.findAll().stream()
-                .filter(a -> a.getNome().equals("Exatas e Tecnologia"))
+                .filter(a -> a.getNome().equals("Informação e Comunicação"))
                 .findFirst().orElseThrow().getId();
+
+        Curso tads = cursoRepository.findAll().stream()
+                .filter(c -> c.getAcronimo().equals("TADS") && c.getCampus().getId().equals(campusId))
+                .findFirst().orElseThrow();
+
+        nomeExistente = tads.getNome();
+        acronimoExistente = tads.getAcronimo();
     }
 
     private String montarJson(String nome, String acronimo, Long campusId, Long areaId) {
@@ -67,7 +77,7 @@ public class CursoCadastroIntegrationTest {
                   "cargaHoraria": 2000,
                   "qtdDisciplinasObrigatorias": 30,
                   "qtdDisciplinasOptativas": 5,
-                  "descricao": "Curso superior de tecnologia em sistemas",
+                  "descricao": "Curso criado pelo teste de integração",
                   "campusId": %d,
                   "areaId": %d
                 }
@@ -76,7 +86,6 @@ public class CursoCadastroIntegrationTest {
 
     @Test
     void deveCadastrarCursoEPersistirNoBanco() throws Exception {
-        // WHEN + THEN (resposta HTTP)
         mockMvc.perform(post("/cursos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(montarJson(NOME_NOVO, ACRONIMO_NOVO, campusId, areaId)))
@@ -86,27 +95,25 @@ public class CursoCadastroIntegrationTest {
                 .andExpect(jsonPath("$.nome").value(NOME_NOVO))
                 .andExpect(jsonPath("$.acronimo").value(ACRONIMO_NOVO))
                 .andExpect(jsonPath("$.campusNome").value("Campus Nova Cruz"))
-                .andExpect(jsonPath("$.areaNome").value("Exatas e Tecnologia"));
+                .andExpect(jsonPath("$.areaNome").value("Informação e Comunicação"))
+                .andExpect(jsonPath("$.coordenadorId").doesNotExist());
 
-        // THEN (banco): o curso realmente foi gravado
         assertThat(cursoRepository.existsByCampusIdAndNomeIgnoreCase(campusId, NOME_NOVO)).isTrue();
     }
 
     @Test
     void deveRetornarConflitoAoCadastrarCursoComNomeRepetidoNoCampus() throws Exception {
-        // WHEN + THEN: "Análise e Desenvolvimento de Sistemas" já existe no IFNC (seed)
         mockMvc.perform(post("/cursos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(montarJson("Análise e Desenvolvimento de Sistemas", ACRONIMO_NOVO, campusId, areaId)))
+                        .content(montarJson(nomeExistente, ACRONIMO_NOVO, campusId, areaId)))
                 .andExpect(status().isConflict());
     }
 
     @Test
     void deveRetornarConflitoAoCadastrarCursoComAcronimoRepetidoNoCampus() throws Exception {
-        // WHEN + THEN: "TADS" já existe no IFNC (seed)
         mockMvc.perform(post("/cursos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(montarJson(NOME_NOVO, "TADS", campusId, areaId)))
+                        .content(montarJson(NOME_NOVO, acronimoExistente, campusId, areaId)))
                 .andExpect(status().isConflict());
     }
 
@@ -120,7 +127,6 @@ public class CursoCadastroIntegrationTest {
 
     @Test
     void deveRetornarRequisicaoInvalidaAoCadastrarCursoSemNome() throws Exception {
-        // nome em branco viola o @NotBlank do DTO, e o service nem é chamado
         long totalAntes = cursoRepository.count();
 
         mockMvc.perform(post("/cursos")
