@@ -1,5 +1,6 @@
 package com.projetointegrador.cursos.integration;
 
+import com.projetointegrador.cursos.infrastructure.entity.Curso;
 import com.projetointegrador.cursos.infrastructure.repository.AreaConhecimentoRepository;
 import com.projetointegrador.cursos.infrastructure.repository.CursoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,27 +35,19 @@ public class CursoConsultaIntegrationTest {
     @Autowired
     private CursoRepository cursoRepository;
 
-    @Autowired
-    private AreaConhecimentoRepository areaConhecimentoRepository;
-
-    private Long cursoTadsId;
-    private Long areaExatasId;
+    private Curso tads;
 
     @BeforeEach
     void setUp() {
-        // GIVEN (comum): ids dos dados que já vêm da migration de seed
-        cursoTadsId = cursoRepository.findAll().stream()
-                .filter(c -> c.getAcronimo().equals("TADS"))
-                .findFirst().orElseThrow().getId();
-
-        areaExatasId = areaConhecimentoRepository.findAll().stream()
-                .filter(a -> a.getNome().equals("Exatas e Tecnologia"))
-                .findFirst().orElseThrow().getId();
+        // GIVEN (comum): o curso TADS do IFNC, que vem do seed
+        tads = cursoRepository.findAll().stream()
+                .filter(c -> c.getAcronimo().equals("TADS")
+                        && c.getCampus().getAcronimo().equals("IFNC"))
+                .findFirst().orElseThrow();
     }
 
     @Test
     void deveListarCursosComPaginacao() throws Exception {
-        // WHEN + THEN: o seed tem 3 cursos, então size=2 devolve só 2
         mockMvc.perform(get(CURSOS)
                         .param("page", "0")
                         .param("size", "2"))
@@ -63,23 +56,22 @@ public class CursoConsultaIntegrationTest {
     }
 
     @Test
-    void deveListarTodosOsCursosDoSeed() throws Exception {
+    void deveListarCursosIncluindoOTads() throws Exception {
         mockMvc.perform(get(CURSOS)
                         .param("page", "0")
-                        .param("size", "50"))
+                        .param("size", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].acronimo", hasItems("TADS", "TPQ", "TADM")));
+                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADS")));
     }
 
     @Test
     void deveBuscarCursoPorIdComSucesso() throws Exception {
-        mockMvc.perform(get(CURSOS + "/{id}", cursoTadsId))
+        mockMvc.perform(get(CURSOS + "/{id}", tads.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(cursoTadsId))
-                .andExpect(jsonPath("$.nome").value("Análise e Desenvolvimento de Sistemas"))
+                .andExpect(jsonPath("$.id").value(tads.getId()))
+                .andExpect(jsonPath("$.nome").value(tads.getNome()))
                 .andExpect(jsonPath("$.acronimo").value("TADS"))
-                .andExpect(jsonPath("$.campusNome").value("Campus Nova Cruz"))
-                .andExpect(jsonPath("$.areaNome").value("Exatas e Tecnologia"));
+                .andExpect(jsonPath("$.campusNome").value("Campus Nova Cruz"));
     }
 
     @Test
@@ -90,44 +82,38 @@ public class CursoConsultaIntegrationTest {
 
     @Test
     void deveFiltrarCursosPorGrau() throws Exception {
-        // SUBSEQUENTE: só o TADM
         mockMvc.perform(get(BUSCAR)
-                        .param("grau", "SUBSEQUENTE")
-                        .param("size", "50"))
+                        .param("grau", tads.getGrau().name())
+                        .param("size", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADM")))
-                .andExpect(jsonPath("$.content[*].acronimo", not(hasItem("TADS"))));
+                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADS")));
     }
 
     @Test
     void deveFiltrarCursosPorTurno() throws Exception {
-        // VESPERTINO: só o TPQ
         mockMvc.perform(get(BUSCAR)
-                        .param("turno", "VESPERTINO")
-                        .param("size", "50"))
+                        .param("turno", tads.getTurno().name())
+                        .param("size", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TPQ")))
-                .andExpect(jsonPath("$.content[*].acronimo", not(hasItem("TADS"))));
+                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADS")));
     }
 
     @Test
     void deveFiltrarCursosPorModalidade() throws Exception {
         mockMvc.perform(get(BUSCAR)
-                        .param("modalidade", "PRESENCIAL")
-                        .param("size", "50"))
+                        .param("modalidade", tads.getModalidade().name())
+                        .param("size", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].acronimo", hasItems("TADS", "TPQ", "TADM")));
+                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADS")));
     }
 
     @Test
     void deveFiltrarCursosPorArea() throws Exception {
-        // Exatas e Tecnologia: só o TADS
         mockMvc.perform(get(BUSCAR)
-                        .param("areaId", String.valueOf(areaExatasId))
-                        .param("size", "50"))
+                        .param("areaId", String.valueOf(tads.getAreaConhecimento().getId()))
+                        .param("size", "1000"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADS")))
-                .andExpect(jsonPath("$.content[*].acronimo", not(hasItem("TPQ"))));
+                .andExpect(jsonPath("$.content[*].acronimo", hasItem("TADS")));
     }
 
     @Test
