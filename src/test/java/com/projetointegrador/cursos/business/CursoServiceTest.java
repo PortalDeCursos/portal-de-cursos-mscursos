@@ -101,7 +101,8 @@ public class CursoServiceTest {
                 5,
                 "Curso superior de tecnologia em sistemas",
                 agora,
-                agora);
+                agora,
+                null);
 
         pageable = PageRequest.of(0, 10);
     }
